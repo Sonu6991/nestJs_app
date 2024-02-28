@@ -1,14 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
+import { Event } from 'src/events/entities/event.entity';
 import { DataSource, Repository } from 'typeorm';
+import {
+  CoffeBrandsFactory,
+  ConfigService,
+  MockService,
+} from './coffees.module';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { Coffee } from './entities/coffees.entity';
 import { Flavor } from './entities/flavor.entity';
-import { Event } from 'src/events/entities/event.entity';
+import { COFFEE_BRANDS } from './coffee.constants';
 
-@Injectable()
+@Injectable({scope:Scope.REQUEST})
 export class CoffeesService {
   constructor(
     @InjectRepository(Coffee)
@@ -16,7 +22,18 @@ export class CoffeesService {
     @InjectRepository(Flavor)
     private readonly flavorRepository: Repository<Flavor>,
     private readonly dataSource: DataSource,
-  ) {}
+    // @Inject('mockSevice') mockSevice: MockService, //value base provider
+    // @Inject(COFFEE_BRANDS) coffeeBrands: string[], //non class token  Providers
+    // @Inject('configSerivce') configService:ConfigService  //class provider
+    // @Inject(COFFEE_BRANDS) coffeBrandsFactory: CoffeBrandsFactory, //factory provider
+  ) {
+    // console.log('mockSevice', mockSevice);
+    // console.log('coffeeBrands', coffeeBrands);
+    // console.log('configService', configService);
+    // console.log('coffeBrandsFactory', coffeBrandsFactory);
+
+    console.log('CoffeesService initializd');
+  }
 
   findAll(paginationquery: PaginationQueryDto) {
     const { limit, page } = paginationquery;

@@ -17,7 +17,9 @@ import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Coffees')
 @Controller('coffees')
 export class CoffeeController {
   constructor(
@@ -26,7 +28,10 @@ export class CoffeeController {
   ) {
     console.log('CoffeeController created');
   }
-
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden.',
+  })
   @Get()
   findAll(@Query() paginationquery: PaginationQueryDto) {
     return this.coffeesService.findAll(paginationquery);
@@ -35,8 +40,6 @@ export class CoffeeController {
   findOne(@Param('id') id: number) {
     return this.coffeesService.findOne(id);
   }
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
   createOne(@Body() createCoffeeDto: CreateCoffeeDto) {
     return this.coffeesService.create(createCoffeeDto);
   }

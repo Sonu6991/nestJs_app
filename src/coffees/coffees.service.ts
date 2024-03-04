@@ -5,16 +5,18 @@ import { Event } from 'src/events/entities/event.entity';
 import { DataSource, Repository } from 'typeorm';
 import {
   CoffeBrandsFactory,
-  ConfigService,
-  MockService,
+  // ConfigService,
+  // MockService,
 } from './coffees.module';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { Coffee } from './entities/coffees.entity';
 import { Flavor } from './entities/flavor.entity';
 import { COFFEE_BRANDS } from './coffee.constants';
+import { ConfigService, ConfigType } from '@nestjs/config';
+import coffeesConfig from './config/coffees.config';
 
-@Injectable({scope:Scope.REQUEST})
+@Injectable({ scope: Scope.DEFAULT })
 export class CoffeesService {
   constructor(
     @InjectRepository(Coffee)
@@ -22,6 +24,9 @@ export class CoffeesService {
     @InjectRepository(Flavor)
     private readonly flavorRepository: Repository<Flavor>,
     private readonly dataSource: DataSource,
+    // private readonly configService: ConfigService, ///accessing by namespace
+    @Inject(coffeesConfig.KEY)
+    private readonly coffeesConfiguration: ConfigType<typeof coffeesConfig>,
     // @Inject('mockSevice') mockSevice: MockService, //value base provider
     // @Inject(COFFEE_BRANDS) coffeeBrands: string[], //non class token  Providers
     // @Inject('configSerivce') configService:ConfigService  //class provider
@@ -31,8 +36,8 @@ export class CoffeesService {
     // console.log('coffeeBrands', coffeeBrands);
     // console.log('configService', configService);
     // console.log('coffeBrandsFactory', coffeBrandsFactory);
+    // const coffesConfig = this.coffeesConfiguration; //accessing by namespace
 
-    console.log('CoffeesService initializd');
   }
 
   findAll(paginationquery: PaginationQueryDto) {

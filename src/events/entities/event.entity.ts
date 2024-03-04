@@ -13,5 +13,5 @@ export class Event {
   name: string;
 
   @Column()
-  payload: Record<string, any>;
+  payload: Record<string, number>;
 }

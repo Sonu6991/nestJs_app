@@ -11,7 +11,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
+import { PaginationQueryDto } from '../../src/common/dto/pagination-query.dto/pagination-query.dto';
 import { CoffeesService } from './coffees.service';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
@@ -24,7 +24,6 @@ export class CoffeeController {
     private readonly coffeesService: CoffeesService,
     @Inject(REQUEST) private readonly request: Request,
   ) {
-    console.log('CoffeeController created');
   }
 
   @Get()
@@ -43,6 +42,10 @@ export class CoffeeController {
   @Patch(':id')
   updateOne(@Param('id') id: number, @Body() updateCoffeeDto: UpdateCoffeeDto) {
     return this.coffeesService.update(id, updateCoffeeDto);
+  }
+  @Patch(':id/recommendCoffee')
+  recommendCoffee(@Param('id') id: number) {
+    return this.coffeesService.recommendCoffee(id);
   }
 
   @Delete(':id')

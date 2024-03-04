@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
-import { Event } from 'src/events/entities/event.entity';
+import { Event } from '../../src/events/entities/event.entity';
 import { DataSource, Repository } from 'typeorm';
 import {
   CoffeBrandsFactory,
@@ -14,7 +14,7 @@ import { Coffee } from './entities/coffees.entity';
 import { Flavor } from './entities/flavor.entity';
 import { COFFEE_BRANDS } from './coffee.constants';
 
-@Injectable({scope:Scope.REQUEST})
+@Injectable() //{ scope: Scope.REQUEST } making test fail
 export class CoffeesService {
   constructor(
     @InjectRepository(Coffee)
@@ -32,7 +32,6 @@ export class CoffeesService {
     // console.log('configService', configService);
     // console.log('coffeBrandsFactory', coffeBrandsFactory);
 
-    console.log('CoffeesService initializd');
   }
 
   findAll(paginationquery: PaginationQueryDto) {
@@ -93,7 +92,11 @@ export class CoffeesService {
     return this.coffeeRepository.remove(coffee);
   }
 
-  async recommendCoffee(coffee: Coffee) {
+  async recommendCoffee(id: number) {
+    const coffee = await this.findOne(id);
+    if (!coffee) {
+      throw new NotFoundException(`Coffee #${id} not found`);
+    }
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();

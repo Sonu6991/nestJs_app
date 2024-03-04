@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { HttpExceptionFilter } from './common/filters/http-exception/http-exception.filter';
+
 const port = process.env.PORT;
 
 async function bootstrap() {
@@ -15,6 +17,7 @@ async function bootstrap() {
       },
     }),
   );
+  app.useGlobalFilters(new HttpExceptionFilter()); //custome errors
   await app.listen(port);
 }
 bootstrap();

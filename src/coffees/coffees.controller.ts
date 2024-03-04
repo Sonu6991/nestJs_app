@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Query,
+  SetMetadata,
 } from '@nestjs/common';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
 import { CoffeesService } from './coffees.service';
@@ -17,16 +18,16 @@ import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('coffees')
 export class CoffeeController {
   constructor(
     private readonly coffeesService: CoffeesService,
     @Inject(REQUEST) private readonly request: Request,
-  ) {
-    console.log('CoffeeController created');
-  }
+  ) {}
 
+  @Public()
   @Get()
   findAll(@Query() paginationquery: PaginationQueryDto) {
     return this.coffeesService.findAll(paginationquery);

@@ -93,7 +93,11 @@ export class CoffeesService {
     return this.coffeeRepository.remove(coffee);
   }
 
-  async recommendCoffee(coffee: Coffee) {
+  async recommendCoffee(id: number) {
+    const coffee = await this.findOne(id);
+    if (!coffee) {
+      throw new NotFoundException(`Coffee #${id} not found`);
+    }
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -106,6 +110,7 @@ export class CoffeesService {
       await queryRunner.manager.save(coffee);
       await queryRunner.manager.save(recommendEvent);
       await queryRunner.commitTransaction();
+      return 'recommendation added!'
     } catch (error) {
       await queryRunner.rollbackTransaction();
     } finally {

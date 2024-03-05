@@ -1,5 +1,6 @@
-import { Column, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
+@Entity()
 @Index(['name', 'type'])
 export class Event {
   @PrimaryGeneratedColumn()
@@ -12,6 +13,6 @@ export class Event {
   @Column()
   name: string;
 
-  @Column()
+  @Column('json')
   payload: Record<string, any>;
 }

@@ -8,7 +8,14 @@ import { CoffeeRatingModule } from './coffee-rating/coffee-rating.module';
 
 
 @Module({
-  imports: [CoffeesModule, TypeOrmModule.forRoot(dbdatasource), CoffeeRatingModule],
+  imports: [
+    CoffeesModule,
+    TypeOrmModule.forRoot({
+      ...dbdatasource,
+      synchronize: true,
+      autoLoadEntities: true,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -31,7 +31,6 @@ export class CoffeesService {
     // console.log('coffeeBrands', coffeeBrands);
     // console.log('configService', configService);
     // console.log('coffeBrandsFactory', coffeBrandsFactory);
-
   }
 
   findAll(paginationquery: PaginationQueryDto) {
@@ -86,6 +85,7 @@ export class CoffeesService {
 
   async remove(id: number) {
     const coffee = await this.findOne(id);
+    console.log('coffee', coffee);
     if (!coffee) {
       throw new NotFoundException(`Coffee #${id} not found`);
     }

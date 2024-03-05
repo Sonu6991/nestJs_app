@@ -23,8 +23,7 @@ export class CoffeeController {
   constructor(
     private readonly coffeesService: CoffeesService,
     @Inject(REQUEST) private readonly request: Request,
-  ) {
-  }
+  ) {}
 
   @Get()
   findAll(@Query() paginationquery: PaginationQueryDto) {
@@ -49,7 +48,7 @@ export class CoffeeController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   deleteOne(@Param('id') id: number) {
     return this.coffeesService.remove(id);
   }

@@ -8,7 +8,7 @@ export class CreateCoffeeDto {
   @IsDefined({ message: 'Name required.', each: true })
   @IsNotEmpty({ message: 'Name must not be empty.' })
   @IsString()
-  readonly name: string;
+  readonly title: string;
 
   @IsDefined({ message: 'Brand required.', each: true })
   @IsNotEmpty({ message: 'Brand must not be empty.' })

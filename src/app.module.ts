@@ -6,7 +6,14 @@ import { AppService } from './app.service';
 import { CoffeesModule } from './coffees/coffees.module';
 
 @Module({
-  imports: [CoffeesModule, TypeOrmModule.forRoot(dbdatasource)],
+  imports: [
+    CoffeesModule,
+    TypeOrmModule.forRoot({
+      ...dbdatasource,
+      synchronize: true,
+      autoLoadEntities: true,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,14 +1,14 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpCode,
-    HttpStatus,
-    Param,
-    Patch,
-    Post,
-    Query
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
 } from '@nestjs/common';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
 import { CoffeesService } from './coffees.service';
@@ -41,5 +41,11 @@ export class CoffeeController {
   @HttpCode(HttpStatus.CREATED)
   deleteOne(@Param('id') id: number) {
     return this.coffeesService.remove(id);
+  }
+
+  @Post('recommend')
+  @HttpCode(HttpStatus.CREATED)
+  recommendations(@Body('id') id: number) {
+    return this.coffeesService.recommendCoffee(id);
   }
 }

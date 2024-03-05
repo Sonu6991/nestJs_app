@@ -11,9 +11,9 @@ export class CreateCoffeeDto {
     @IsString()
     readonly brand: string;
 
-    @IsDefined({ message: "flavours required.", each: true })
-    @IsNotEmpty({ message: "flavours must not be empty.", each: true })
+    @IsDefined({ message: "flavors required.", each: true })
+    @IsNotEmpty({ message: "flavors must not be empty.", each: true })
     @IsString({ each: true })
-    readonly flavours: string[]
+    readonly flavors: string[]
 
 }

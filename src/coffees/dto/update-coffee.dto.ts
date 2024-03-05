@@ -14,9 +14,9 @@ import { CreateCoffeeDto } from "./create-coffee.dto";
 //     readonly brand: string;
 
 //     @IsOptional()
-//     @IsNotEmpty({ message: "flavours must not be empty.", each: true })
+//     @IsNotEmpty({ message: "flavors must not be empty.", each: true })
 //     @IsString({ each: true })
-//     readonly flavours: string[]
+//     readonly flavors: string[]
 // }
 
 export class UpdateCoffeeDto extends PartialType(CreateCoffeeDto) { }

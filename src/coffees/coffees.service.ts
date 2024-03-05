@@ -1,51 +1,96 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { Coffee } from './entities/coffees.entity';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Coffee, CoffeeSchema } from './entities/coffees.entity';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { Connection, Model, Schema, Types } from 'mongoose';
+import { CreateCoffeeDto } from './dto/create-coffee.dto';
+import { UpdateCoffeeDto } from './dto/update-coffee.dto';
+import { OnlyIDParamDTO } from 'src/common/dto/only-id-param.dto';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
 @Injectable()
 export class CoffeesService {
-    private coffees: Coffee[] = [{
-        id: 1,
-        name: "Shipwreck Roast",
-        brand: "Buddy brew",
-        flavours: ['chocolate', 'vanilla']
-    }]
+  constructor(
+    @InjectModel(Coffee.name)
+    private readonly coffeeModel: Model<Coffee>,
+    @InjectModel(Event.name)
+    private readonly EventModel: Model<Event>,
+    @InjectConnection() private readonly connection: Connection,
+  ) {}
 
+  findAll(paginationquery: PaginationQueryDto) {
+    console.log('paginationquery', paginationquery);
+    const { limit, page } = paginationquery;
+    return this.coffeeModel
+      .find()
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
+  }
 
-    findAll(limit: string, page: string) {
-        return this.coffees
+  async findOne(id: Types.ObjectId) {
+    try {
+      const coffee = await this.coffeeModel.findOne({ _id: id }).exec();
+      if (!coffee) {
+        throw new NotFoundException(`Coffee #${id} not found`);
+      }
+      return coffee;
+    } catch (error) {
+      console.log('error..........', error.message);
+    }
+  }
+
+  create(CreateCoffeeDto: CreateCoffeeDto) {
+    const coffee = new this.coffeeModel(CreateCoffeeDto);
+    return coffee.save();
+  }
+
+  async update(id: Types.ObjectId, updateCoffeeDto: UpdateCoffeeDto) {
+    let existingCoffee = await this.coffeeModel
+      .findOneAndUpdate({ _id: id }, { $set: updateCoffeeDto }, { new: true })
+      .exec();
+    if (!existingCoffee) {
+      throw new NotFoundException(`Coffee #${id} not found`);
     }
 
-    findOne(id: number) {
-        const coffee = this.coffees.find((coffee) => coffee.id === id)
-        if (!coffee) {
-            throw new NotFoundException(`Coffee #${id} not found`)
-        }
-        return coffee
+    return existingCoffee;
+  }
+
+  async remove(id: Types.ObjectId) {
+    const coffee = await this.findOne(id);
+    if (!coffee) {
+      throw new NotFoundException(`Coffee #${id} not found`);
     }
+    return coffee.deleteOne();
+  }
 
-    create(CreateCoffeeDto: any) {
-        let lastId = this.coffees[this.coffees.length - 1].id
-        this.coffees.push({ id: lastId + 1, ...CreateCoffeeDto })
+  async recommend(id: Types.ObjectId) {
+    const coffee = await this.findOne(id);
+    if (!coffee) {
+      throw new NotFoundException(`Coffee #${id} not found`);
     }
-
-    update(id: number, updateCoffeeDto: any) {
-        let existingIndex = this.coffees.findIndex((coffee) => coffee.id === id)
-        if (existingIndex <= -1) {
-            throw new NotFoundException(`Coffee #${id} not found`)
-        }
-        Object.keys(updateCoffeeDto).forEach((key: string) => {
-            this.coffees[existingIndex][key] = updateCoffeeDto[key]
-        });
-        return this.coffees[existingIndex]
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    try {
+      coffee.recommendations++;
+      const recommendedEvent = new this.EventModel({
+        type: 'coffee',
+        name: coffee.name,
+        payload: { coffeId: coffee._id },
+      });
+      await recommendedEvent.save({ session });
+      await coffee.save({ session });
+      await session.commitTransaction();
+      return "recommended!"
+    } catch (error) {
+      console.log('error', error);
+      await session.abortTransaction();
+    } finally {
+      await session.endSession();
     }
-
-    remove(id: number) {
-        let existingIndex = this.coffees.findIndex((coffee) => coffee.id === id)
-        if (existingIndex <= -1) {
-            throw new NotFoundException(`Coffee #${id} not found`)
-        }
-        this.coffees.splice(existingIndex, 1)
-
-    }
-
+  }
 }

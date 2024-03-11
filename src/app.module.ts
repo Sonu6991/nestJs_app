@@ -12,18 +12,30 @@ import appConfig from './config/app.config';
   imports: [
     CoffeesModule,
     TypeOrmModule.forRootAsync({
-      useFactory: () => ({
-        type: 'postgres',
-        host: process.env.DB_HOST,
-        port: +process.env.DB_PORT,
-        username: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        entities: ['dist/**/*.entity.js'],
-        migrations: ['dist/src/migrations/*.js'],
-        synchronize: true,
-        
-      }),
+      useFactory: () => {
+        console.log(
+          'DB_HOST',
+          process.env.DB_HOST,
+          'DB_PORT :',
+          process.env.DB_PORT,
+          'DB_USERNAME :',
+          process.env.DB_USERNAME,
+          'DB_PASSWORD :',
+          process.env.DB_PASSWORD,
+        );
+
+        return {
+          type: 'postgres',
+          host: process.env.DB_HOST,
+          port: +process.env.DB_PORT,
+          username: process.env.DB_USERNAME,
+          password: process.env.DB_PASSWORD,
+          database: process.env.DB_NAME,
+          entities: ['dist/**/*.entity.js'],
+          migrations: ['dist/src/migrations/*.js'],
+          synchronize: true,
+        };
+      },
     }),
     ConfigModule.forRoot({
       validationSchema: Joi.object({
